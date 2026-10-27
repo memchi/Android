@@ -3,67 +3,105 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:weightSum="2"
     android:padding="16dp"
     android:background="@android:color/white">
 
-    <!-- Top Half: Heute -->
+    <!-- Header Field with Light Grey Background -->
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
+        android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:background="#F9F9F9"
-        android:padding="12dp">
+        android:background="#EFEFEF"
+        android:padding="16dp"
+        android:gravity="center"
+        android:layout_marginBottom="16dp">
 
         <TextView
-            android:layout_width="match_parent"
+            android:id="@+id/textClock"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Heute"
-            android:textSize="22sp"
+            android:text="12:50"
+            android:textSize="36sp"
             android:textStyle="bold"
-            android:textColor="@android:color/black"
-            android:paddingBottom="8dp" />
+            android:textColor="@android:color/black" />
 
         <TextView
-            android:id="@+id/textTodayEvents"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:text="Keine Termine"
-            android:textSize="18sp"
-            android:textColor="@android:color/black" />
+            android:id="@+id/textDate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Donnerstag, 29. Oktober 2026"
+            android:textSize="16sp"
+            android:textColor="#555555"
+            android:paddingTop="4dp" />
     </LinearLayout>
 
-    <!-- Spacer -->
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="12dp" />
-
-    <!-- Bottom Half: Morgen -->
+    <!-- Content Container for Heute and Morgen -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
         android:orientation="vertical"
-        android:background="#F9F9F9"
-        android:padding="12dp">
+        android:weightSum="2">
 
-        <TextView
+        <!-- Top Half: Heute -->
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Morgen"
-            android:textSize="22sp"
-            android:textStyle="bold"
-            android:textColor="@android:color/black"
-            android:paddingBottom="8dp" />
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:background="#F9F9F9"
+            android:padding="12dp">
 
-        <TextView
-            android:id="@+id/textTomorrowEvents"
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Heute"
+                android:textSize="22sp"
+                android:textStyle="bold"
+                android:textColor="@android:color/black"
+                android:paddingBottom="8dp" />
+
+            <TextView
+                android:id="@+id/textTodayEvents"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="Keine Termine"
+                android:textSize="18sp"
+                android:textColor="@android:color/black" />
+        </LinearLayout>
+
+        <!-- Spacer -->
+        <View
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:text="Keine Termine"
-            android:textSize="18sp"
-            android:textColor="@android:color/black" />
+            android:layout_height="12dp" />
+
+        <!-- Bottom Half: Morgen -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:background="#F9F9F9"
+            android:padding="12dp">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Morgen"
+                android:textSize="22sp"
+                android:textStyle="bold"
+                android:textColor="@android:color/black"
+                android:paddingBottom="8dp" />
+
+            <TextView
+                android:id="@+id/textTomorrowEvents"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="Keine Termine"
+                android:textSize="18sp"
+                android:textColor="@android:color/black" />
+        </LinearLayout>
+
     </LinearLayout>
 
 </LinearLayout>

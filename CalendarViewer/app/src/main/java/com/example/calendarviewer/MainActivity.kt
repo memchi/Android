@@ -3,6 +3,7 @@ package com.example.calendarviewer
 import android.Manifest
 import android.content.ContentUris
 import android.content.pm.PackageManager
+import android.database.ContentObserver
 import android.database.Cursor
 import android.net.Uri
 import android.os.Bundle
@@ -25,31 +26,68 @@ class MainActivity : AppCompatActivity() {
     private val midnightRunnable = Runnable {
         checkCalendarPermission()
         scheduleMidnightUpdate()
+        updateDateTimeHeader()
     }
 
     private val brightnessRunnable = Runnable {
         updateBrightnessBasedOnTime()
     }
 
+    private val clockRunnable = object : Runnable {
+        override fun run() {
+            updateDateTimeHeader()
+            handler.postDelayed(this, 60000)
+        }
+    }
+
+    private val calendarObserver = object : ContentObserver(handler) {
+        override fun onChange(selfChange: Boolean, uri: Uri?) {
+            super.onChange(selfChange, uri)
+            loadCalendarData()
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        updateDateTimeHeader()
         checkCalendarPermission()
         updateBrightnessBasedOnTime()
     }
 
     override fun onResume() {
         super.onResume()
+        updateDateTimeHeader()
         checkCalendarPermission()
         scheduleMidnightUpdate()
         updateBrightnessBasedOnTime()
+
+        handler.removeCallbacks(clockRunnable)
+        handler.post(clockRunnable)
+
+        contentResolver.registerContentObserver(
+            CalendarContract.Events.CONTENT_URI,
+            true,
+            calendarObserver
+        )
     }
 
     override fun onPause() {
         super.onPause()
         handler.removeCallbacks(midnightRunnable)
         handler.removeCallbacks(brightnessRunnable)
+        handler.removeCallbacks(clockRunnable)
+        contentResolver.unregisterContentObserver(calendarObserver)
+    }
+
+    private fun updateDateTimeHeader() {
+        val now = Date()
+        val timeFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
+        val dateFormat = SimpleDateFormat("EEEE, d. MMMM yyyy", Locale.forLanguageTag("de-DE"))
+
+        findViewById<TextView>(R.id.textClock).text = timeFormat.format(now)
+        findViewById<TextView>(R.id.textDate).text = dateFormat.format(now)
     }
 
     private fun scheduleMidnightUpdate() {
@@ -131,6 +169,7 @@ class MainActivity : AppCompatActivity() {
             loadCalendarData()
             scheduleMidnightUpdate()
             updateBrightnessBasedOnTime()
+            updateDateTimeHeader()
         } else {
             findViewById<TextView>(R.id.textTodayEvents).text = "Berechtigung verweigert"
         }
