@@ -40,6 +40,14 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private val refreshRunnable = object : Runnable {
+        override fun run() {
+            requestCalendarSync()
+            loadCalendarData()
+            handler.postDelayed(this, 300000) // every 5 minutes
+        }
+    }
+
     private val calendarObserver = object : ContentObserver(handler) {
         override fun onChange(selfChange: Boolean, uri: Uri?) {
             super.onChange(selfChange, uri)
@@ -54,6 +62,7 @@ class MainActivity : AppCompatActivity() {
         updateDateTimeHeader()
         checkCalendarPermission()
         updateBrightnessBasedOnTime()
+        requestCalendarSync()
     }
 
     override fun onResume() {
@@ -62,9 +71,13 @@ class MainActivity : AppCompatActivity() {
         checkCalendarPermission()
         scheduleMidnightUpdate()
         updateBrightnessBasedOnTime()
+        requestCalendarSync()
 
         handler.removeCallbacks(clockRunnable)
         handler.post(clockRunnable)
+
+        handler.removeCallbacks(refreshRunnable)
+        handler.postDelayed(refreshRunnable, 300000)
 
         contentResolver.registerContentObserver(
             CalendarContract.Events.CONTENT_URI,
@@ -78,7 +91,26 @@ class MainActivity : AppCompatActivity() {
         handler.removeCallbacks(midnightRunnable)
         handler.removeCallbacks(brightnessRunnable)
         handler.removeCallbacks(clockRunnable)
+        handler.removeCallbacks(refreshRunnable)
         contentResolver.unregisterContentObserver(calendarObserver)
+    }
+
+    private fun requestCalendarSync() {
+        try {
+            val accountManager = android.accounts.AccountManager.get(this)
+            val accounts = accountManager.accounts
+            val extras = Bundle().apply {
+                putBoolean(android.content.ContentResolver.SYNC_EXTRAS_MANUAL, true)
+                putBoolean(android.content.ContentResolver.SYNC_EXTRAS_EXPEDITED, true)
+            }
+            for (account in accounts) {
+                if (android.content.ContentResolver.getIsSyncable(account, CalendarContract.AUTHORITY) > 0) {
+                    android.content.ContentResolver.requestSync(account, CalendarContract.AUTHORITY, extras)
+                }
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
     }
 
     private fun updateDateTimeHeader() {
@@ -114,7 +146,7 @@ class MainActivity : AppCompatActivity() {
         val isNight = currentMinutes >= 1320 || currentMinutes < 420
 
         val layoutParams = window.attributes
-        layoutParams.screenBrightness = if (isNight) 0.2f else WindowManager.LayoutParams.BRIGHTNESS_OVERRIDE_NONE
+        layoutParams.screenBrightness = if (isNight) 0.5f else WindowManager.LayoutParams.BRIGHTNESS_OVERRIDE_NONE
         window.attributes = layoutParams
 
         scheduleNextBrightnessUpdate()
@@ -170,6 +202,7 @@ class MainActivity : AppCompatActivity() {
             scheduleMidnightUpdate()
             updateBrightnessBasedOnTime()
             updateDateTimeHeader()
+            requestCalendarSync()
         } else {
             findViewById<TextView>(R.id.textTodayEvents).text = "Berechtigung verweigert"
         }
