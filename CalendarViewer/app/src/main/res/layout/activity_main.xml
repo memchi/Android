@@ -3,26 +3,67 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:weightSum="2">
+    android:weightSum="2"
+    android:padding="16dp"
+    android:background="@android:color/white">
 
-    <!-- Top Half: Today -->
-    <WebView
-        android:id="@+id/webViewToday"
+    <!-- Top Half: Heute -->
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1" />
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:background="#F9F9F9"
+        android:padding="12dp">
 
-    <!-- Divider Line -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Heute"
+            android:textSize="22sp"
+            android:textStyle="bold"
+            android:textColor="@android:color/black"
+            android:paddingBottom="8dp" />
+
+        <TextView
+            android:id="@+id/textTodayEvents"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="Keine Termine"
+            android:textSize="18sp"
+            android:textColor="@android:color/black" />
+    </LinearLayout>
+
+    <!-- Spacer -->
     <View
         android:layout_width="match_parent"
-        android:layout_height="2dp"
-        android:background="@android:color/darker_gray" />
+        android:layout_height="12dp" />
 
-    <!-- Bottom Half: Tomorrow -->
-    <WebView
-        android:id="@+id/webViewTomorrow"
+    <!-- Bottom Half: Morgen -->
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1" />
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:background="#F9F9F9"
+        android:padding="12dp">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Morgen"
+            android:textSize="22sp"
+            android:textStyle="bold"
+            android:textColor="@android:color/black"
+            android:paddingBottom="8dp" />
+
+        <TextView
+            android:id="@+id/textTomorrowEvents"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="Keine Termine"
+            android:textSize="18sp"
+            android:textColor="@android:color/black" />
+    </LinearLayout>
 
 </LinearLayout>
