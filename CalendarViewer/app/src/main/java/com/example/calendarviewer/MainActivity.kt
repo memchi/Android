@@ -155,7 +155,6 @@ class MainActivity : AppCompatActivity() {
 
     private fun loadCalendarData() {
         val todayText = findViewById<TextView>(R.id.textTodayEvents)
-        val tomorrowText = findViewById<TextView>(R.id.textTomorrowEvents)
 
         val calendar = Calendar.getInstance()
         
@@ -170,12 +169,7 @@ class MainActivity : AppCompatActivity() {
         calendar.add(Calendar.DAY_OF_YEAR, 1)
         val startTomorrow = calendar.timeInMillis
 
-        // End of Tomorrow (23:59:59)
-        calendar.add(Calendar.DAY_OF_YEAR, 1)
-        val endTomorrow = calendar.timeInMillis
-
         todayText.text = getEventsForInterval(startToday, startTomorrow)
-        tomorrowText.text = getEventsForInterval(startTomorrow, endTomorrow)
     }
 
     private fun getEventsForInterval(startTime: Long, endTime: Long): String {
