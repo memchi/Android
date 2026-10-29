@@ -223,7 +223,7 @@ class MainActivity : AppCompatActivity() {
                 val start = it.getLong(startIdx)
                 val isAllDay = it.getInt(allDayIdx) == 1
 
-                val timeStr = if (isAllDay) "Ganztägig" else timeFormat.format(Date(start))
+                val timeStr = if (isAllDay) "Ganzt\u00e4gig" else timeFormat.format(Date(start))
                 builder.append("$timeStr  $title\n\n")
             }
         }
