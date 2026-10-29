@@ -5,11 +5,15 @@ import android.content.ContentUris
 import android.content.pm.PackageManager
 import android.database.ContentObserver
 import android.database.Cursor
+import android.graphics.Typeface
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.provider.CalendarContract
+import android.text.Spannable
+import android.text.SpannableString
+import android.text.style.StyleSpan
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
@@ -108,10 +112,19 @@ class MainActivity : AppCompatActivity() {
     private fun updateDateTimeHeader() {
         val now = Date()
         val timeFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
-        val dateFormat = SimpleDateFormat("EEEE, d. MMMM yyyy", Locale.forLanguageTag("de-DE"))
+        val dayFormat = SimpleDateFormat("EEEE", Locale.forLanguageTag("de-DE"))
+        val restDateFormat = SimpleDateFormat(", d. MMMM yyyy", Locale.forLanguageTag("de-DE"))
 
-        findViewById<TextView>(R.id.textClock).text = timeFormat.format(now)
-        findViewById<TextView>(R.id.textDate).text = dateFormat.format(now)
+        val timeStr = timeFormat.format(now)
+        val dayStr = dayFormat.format(now)
+        val restStr = restDateFormat.format(now)
+        val fullDateStr = dayStr + restStr
+
+        val spannable = SpannableString(fullDateStr)
+        spannable.setSpan(StyleSpan(Typeface.BOLD), 0, dayStr.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+
+        findViewById<TextView>(R.id.textClock).text = timeStr
+        findViewById<TextView>(R.id.textDate).text = spannable
     }
 
     private fun scheduleMidnightUpdate() {

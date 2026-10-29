@@ -30,8 +30,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Donnerstag, 29. Oktober 2026"
-            android:textSize="20sp"
-            android:textColor="#555555"
+            android:textSize="24sp"
+            android:textColor="#333333"
             android:paddingTop="4dp" />
     </LinearLayout>
 
