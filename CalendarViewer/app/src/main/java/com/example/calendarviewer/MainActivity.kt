@@ -10,7 +10,6 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.provider.CalendarContract
-import android.view.WindowManager
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
@@ -27,10 +26,6 @@ class MainActivity : AppCompatActivity() {
         checkCalendarPermission()
         scheduleMidnightUpdate()
         updateDateTimeHeader()
-    }
-
-    private val brightnessRunnable = Runnable {
-        updateBrightnessBasedOnTime()
     }
 
     private val clockRunnable = object : Runnable {
@@ -61,7 +56,6 @@ class MainActivity : AppCompatActivity() {
 
         updateDateTimeHeader()
         checkCalendarPermission()
-        updateBrightnessBasedOnTime()
         requestCalendarSync()
     }
 
@@ -70,7 +64,6 @@ class MainActivity : AppCompatActivity() {
         updateDateTimeHeader()
         checkCalendarPermission()
         scheduleMidnightUpdate()
-        updateBrightnessBasedOnTime()
         requestCalendarSync()
 
         handler.removeCallbacks(clockRunnable)
@@ -89,7 +82,6 @@ class MainActivity : AppCompatActivity() {
     override fun onPause() {
         super.onPause()
         handler.removeCallbacks(midnightRunnable)
-        handler.removeCallbacks(brightnessRunnable)
         handler.removeCallbacks(clockRunnable)
         handler.removeCallbacks(refreshRunnable)
         contentResolver.unregisterContentObserver(calendarObserver)
@@ -136,52 +128,6 @@ class MainActivity : AppCompatActivity() {
         handler.postDelayed(midnightRunnable, delay)
     }
 
-    private fun updateBrightnessBasedOnTime() {
-        val calendar = Calendar.getInstance()
-        val hour = calendar.get(Calendar.HOUR_OF_DAY)
-        val minute = calendar.get(Calendar.MINUTE)
-        val currentMinutes = hour * 60 + minute
-
-        // 22:00 = 1320 minutes, 07:00 = 420 minutes
-        val isNight = currentMinutes >= 1320 || currentMinutes < 420
-
-        val layoutParams = window.attributes
-        layoutParams.screenBrightness = if (isNight) 0.5f else WindowManager.LayoutParams.BRIGHTNESS_OVERRIDE_NONE
-        window.attributes = layoutParams
-
-        scheduleNextBrightnessUpdate()
-    }
-
-    private fun scheduleNextBrightnessUpdate() {
-        val now = Calendar.getInstance()
-        val target07 = Calendar.getInstance().apply {
-            set(Calendar.HOUR_OF_DAY, 7)
-            set(Calendar.MINUTE, 0)
-            set(Calendar.SECOND, 0)
-            set(Calendar.MILLISECOND, 0)
-        }
-        val target22 = Calendar.getInstance().apply {
-            set(Calendar.HOUR_OF_DAY, 22)
-            set(Calendar.MINUTE, 0)
-            set(Calendar.SECOND, 0)
-            set(Calendar.MILLISECOND, 0)
-        }
-
-        val nowMillis = now.timeInMillis
-        val candidates = listOf(
-            target07.timeInMillis,
-            target22.timeInMillis,
-            target07.clone().let { (it as Calendar).add(Calendar.DAY_OF_YEAR, 1); it.timeInMillis },
-            target22.clone().let { (it as Calendar).add(Calendar.DAY_OF_YEAR, 1); it.timeInMillis }
-        ).filter { it > nowMillis }
-
-        val nextTarget = candidates.minOrNull() ?: (nowMillis + 60000)
-        val delay = nextTarget - nowMillis
-
-        handler.removeCallbacks(brightnessRunnable)
-        handler.postDelayed(brightnessRunnable, delay)
-    }
-
     private fun checkCalendarPermission() {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CALENDAR)
             != PackageManager.PERMISSION_GRANTED) {
@@ -200,7 +146,6 @@ class MainActivity : AppCompatActivity() {
         if (requestCode == REQUEST_CODE_CALENDAR && grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
             loadCalendarData()
             scheduleMidnightUpdate()
-            updateBrightnessBasedOnTime()
             updateDateTimeHeader()
             requestCalendarSync()
         } else {
